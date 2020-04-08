@@ -1,4 +1,4 @@
-class ComputerPlayer
+class AIPlayer
 
     ALPHABET = "abcdefghijklmnopqrstuvwxyz"
 

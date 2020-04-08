@@ -1,6 +1,6 @@
 require "set"
 require_relative "player"
-require_relative "computer_player"
+require_relative "ai_player"
 
 class Game
 
@@ -16,7 +16,7 @@ class Game
         @players = []
         player_names.each do |name, computer|
             if computer 
-                @players << ComputerPlayer.new(name)
+                @players << AIPlayer.new(name)
             else
                 @players << Player.new(name)
             end
@@ -167,7 +167,7 @@ def start_game
                 player_names[input] = false
             else
                 (input.to_i).times do |i|
-                    name = "Computer_" + i.to_s
+                    name = "AIPlayer_" + i.to_s
                     player_names[name] = true
                 end
             end
@@ -188,4 +188,6 @@ def start_game
 
 end
 
-start_game
+if __FILE__ == $PROGRAM_NAME
+    start_game
+end
