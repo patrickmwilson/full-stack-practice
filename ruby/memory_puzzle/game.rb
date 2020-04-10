@@ -121,7 +121,15 @@ def get_board_size
     system("clear")
     puts ""
     print "Enter the board size: "
-    gets.chomp.to_i 
+    size = nil 
+    until size
+        size = gets.chomp.to_i 
+        if size.odd?
+            puts "Board size must be an even number"
+            size = nil 
+        end 
+    end 
+    size
 end
 
 def add_players(input)
