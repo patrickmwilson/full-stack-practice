@@ -22,7 +22,7 @@ class Game
         until @board.won?
             take_turn
         end
-        puts "#{last_player.name} won in #{last_player.turns} turns!"
+        puts "#{winner} won in #{winner.turns} turns!"
     end
 
     private
@@ -31,18 +31,19 @@ class Game
 
     def take_turn
         first_card = make_guess(nil)
-        inform(first_card)
         second_card = make_guess(first_card)
-        inform(second_card)
+        match([first_card,second_card])
+        next_player!
+    end
 
+    def match(cards)
+        first_card,second_card = cards
         if fvalue(first_card) != fvalue(second_card)
             sleep(2)
-            hide([first_card,second_card])
+            hide(cards)
         else
-            inform_dead_positions(first_card)
-            inform_dead_positions(second_card)
+            inform_dead_positions(cards)
         end
-        next_player!
     end
 
     def fvalue(card)
@@ -71,7 +72,7 @@ class Game
 
             board.render 
         end
-
+        inform([face_value,pos])
         [face_value,pos]
     end
 
@@ -83,8 +84,8 @@ class Game
         players.each {|player| player.inform_size(board.size)}
     end
 
-    def inform_dead_positions(card)
-        players.each {|player| player.inform_dead_positions(card)}
+    def inform_dead_positions(cards)
+        players.each {|player| player.inform_dead_positions(cards)}
     end
 
     def next_player!
@@ -97,6 +98,10 @@ class Game
 
     def last_player
         players.last
+    end
+
+    def winner 
+        players.min {|player| player.turns}
     end
 
 end

@@ -7,102 +7,109 @@ class AIPlayer
         @turns = 0
         @positions = []
         @known_cards = Hash.new
-        @matches = []
-        @hot_match = nil
-        @last_pos = nil
+        @known_matches = Hash.new
         @last_card = nil
     end
 
     def guess(last_card)
         @last_card = last_card
-        @hot_match = nil if last_card.nil?
-        pos = pick_card
-
-        puts "#{@name}'s turn!"
-        puts ""
-        sleep(1)
-
-        puts "#{pos}"
-        sleep(1)
-
-        set_last_pos(pos)
-        @turns += 1 unless last_card.nil?
-
-        pos
+        update
+        pick_card
     end
 
     def inform(card)
-        face_value, pos = card
-
-        if @known_cards.has_key?(face_value)
-            @matches << [@known_cards[face_value],pos]
-        else
-            @known_cards[face_value] = pos
-        end
+        add_known(card)
     end
 
     def inform_size(size)
-        (0...size).each do |idx1|
-            (0...size).each do |idx2|
-                @positions << [idx1,idx2]
-            end
-        end
+        populate_positions(size)
     end
 
-    def inform_dead_positions(card)
-        face_value, pos = card
-        @positions.delete(pos)
+    def inform_dead_positions(cards)
+        cards.each do |card|
+            delete_known(card)
+        end
     end
 
     private
 
-    attr_reader :last_card, :last_pos, :positions, :matches, :grid, :known_cards
+    attr_reader :last_card, :last_pos, :positions, :matches, :known_cards, :known_matches
 
     def pick_card
         if last_card.nil?
             pos = match_from_scratch
         else
-            pos = @hot_match
-            pos = match_last_card if pos.nil?
+            pos = match_last_card
         end
         pos = get_new_pos if pos.nil?
+        announce(pos)
         pos
     end
 
+    def delete_known(card)
+        face_value,pos = card 
+        positions.delete(pos)
+        known_cards.delete(face_value)
+        known_matches.delete(face_value)
+    end
+
+    def add_known(card)
+        face_value, pos = card
+        return if known_matches.has_key?(face_value)
+
+        if known_cards.has_key?(face_value)
+            known_matches[face_value] = pos 
+        else   
+            known_cards[face_value] = pos 
+        end 
+    end
+
+    def announce(pos) 
+        puts "#{pos}"
+        sleep(1)
+    end
+
     def match_from_scratch
-        @matches.each do |match|
-            first_pos, second_pos = match
-            if positions.include?(first_pos)
-                @hot_match = second_pos
-                return first_pos
-            end
-        end
-        nil
+        return nil if known_matches.empty?
+        return known_matches.values.first
     end
 
     def match_last_card
         face_value, pos = last_card
-        return nil unless known_cards.has_key?(face_value)
-        return nil if pos == known_cards[face_value]
-        return known_cards[face_value]
+        return nil unless known_matches.has_key?(face_value)
+        known_cards[face_value] 
     end
 
     def get_new_pos
         pos = nil
-        until pos 
+        pos = positions.sample
+        until pos
             pos = positions.sample
-            if last_card.nil? 
+            if last_card.nil?
                 face_value, last_pos = last_card
-                if known_cards.has_value?(pos)
-                    pos = nil 
-                end
+                pos = nil if known_cards.has_value?(last_pos)
             end
         end
         pos
     end
 
-    def set_last_pos(pos)
-        last_card.nil? ? last_pos = pos : last_pos = nil
+    def populate_positions(size)
+        (0...size).each do |idx1|
+            (0...size).each do |idx2|
+                positions << [idx1,idx2]
+            end
+        end
+    end
+
+    def update
+        @turns += 1
+        prompt
+    end
+
+    def prompt
+        puts "#{@name}'s turn!"
+        puts ""
+        sleep(1)
     end
 
 end
