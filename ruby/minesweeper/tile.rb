@@ -18,11 +18,11 @@ class Tile
             return 
         end
         @status = true
-        unflag if flagged?
+        @flagged = false
     end
 
     def complete?
-        return true if revealed?
+        revealed? || bomb?
     end
 
     def revealed?
@@ -47,10 +47,6 @@ class Tile
 
     def flagged?
         @flagged 
-    end
-
-    def unflag
-        @flagged = false 
     end
 
     def bomb?
@@ -81,7 +77,7 @@ class Tile
     end
 
     def color 
-        return :green if flagged?
+        return :red if flagged?
         return :white unless revealed?
         return :red if bomb?
         case @adjacent_bombs

@@ -1,3 +1,4 @@
+require "yaml"
 require_relative "board"
 
 class Game
@@ -35,22 +36,35 @@ class Game
             board.reveal(pos)
         when 'f'
             board.flag(pos)
+        when 's'
+            save 
+        when 'q'
+            exit(true)
         end
+    end
+
+    def save 
+        print "Enter the desired save file name: "
+        file_name = gets.chomp 
+        File.write(file_name, YAML.dump(self))
+        puts "Game saved to #{file_name}"
+        sleep(3)
     end
 
     def get_move
         val = nil
         until valid_move?(val)
             board.render
-            print "Enter 'f' to flag the tile or 'r' to reveal the tile: "
+            puts "Enter 'f' to flag a square, 'r' to reveal a square, 's' to save, or 'q' to quit!"
             val = gets.chomp.downcase
         end
         val
     end
 
     def valid_move?(val)
-        unless val == 'r' || val == 'f'
-            puts "Enter 'f' or 'r'!"
+        return false if val.nil?
+        unless val == 'r' || val == 'f' || val == 's' || val == 'q'
+            puts "Invalid input!"
             sleep(2)
             return false 
         end
@@ -104,7 +118,7 @@ def get_input
     size
 end
 
-def start_game
+def get_size
     size = get_input
     case size 
     when 1
@@ -117,9 +131,31 @@ def start_game
         board_size = 32
         num_bombs = 160
     end
+    [board_size, num_bombs]
+end
 
-    game = Game.new(board_size, num_bombs)
-    game.play 
+def get_save_input 
+    file_name = nil
+    while file_name.nil? 
+        print "Enter the name of your saved game, or leave blank to begin new game:"
+        file_name = gets.chomp 
+    end
+    if file_name.empty?
+        nil 
+    else
+        file_name 
+    end
+end
+
+def start_game
+    file_name = get_save_input
+    unless file_name.nil?
+        YAML.load_file(file_name).play 
+    else
+        board_size, num_bombs = get_size
+        game = Game.new(board_size, num_bombs)
+        game.play 
+    end
 end
 
 if __FILE__ == $PROGRAM_NAME
