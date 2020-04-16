@@ -31,18 +31,42 @@ class KnightPathFinder
         @considered_positions = []
         @considered_positions << start_pos
         @move_tree = build_move_tree(@root_node)
+        @path = []
+    end
+
+    def find_path(end_pos)
+        target = root_node.bfs(end_pos)
+        trace_back_path(target)
     end
 
     private
 
-    attr_reader :root_node, :considered_positions, :root_node
+    attr_reader :root_node, :considered_positions, :root_node, :path
+
+    def trace_back_path(node)
+        path = []
+
+        current_node = node
+        done = false
+        until done
+            path << current_node.value
+            current_node = current_node.parent
+            done = true if current_node.parent.nil?
+        end
+        path << current_node.value
+
+        path.reverse
+    end
 
     def build_move_tree(root)
-        moves = new_move_positions(root.value)
-        moves.each do |pos|
-            node = PolyTreeNode.new(pos)
-            node.parent = root 
-            build_move_tree(node)
+        nodes = [root]
+        until nodes.empty?
+            node = nodes.shift 
+            new_move_positions(node.value).each do |pos|
+                new_node = PolyTreeNode.new(pos)
+                new_node.parent = node 
+                nodes << new_node
+            end
         end
     end
 
