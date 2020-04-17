@@ -144,4 +144,35 @@ def make_change(amt, coins)
     change
 end
 
+def pow(base, exponent)
+    if exponent == 0
+        1
+        else
+        base*(pow(base,(exponent-1)))
+    end
+end
+
+def lucas_number(n)
+    return 2 if n == 0
+    return 1 if n == 1
+    lucas_number(n-1) + lucas_number(n-2)
+end
+
+def sum_array(array)
+    return 0 if array.empty?
+    array.shift + sum_array(array)
+end
+
+def reverse_string(str)
+    return "" if str.length == 0
+    str = str.split("") if str.kind_of?(String)
+    (str.pop + reverse_string(str))
+end
+
+def flatten(data)
+    return [data] if !data.kind_of?(Array)
+    return flatten(data.shift) if data.length == 1
+    flatten(data.shift) + flatten(data)
+end
+
 
