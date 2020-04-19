@@ -23,7 +23,7 @@ class Board
             row.map! {|val| Tile.new(val)}
         end
 
-        self.inform
+        inform
         @lost = false
     end
 
@@ -86,7 +86,7 @@ class Board
     attr_reader :grid, :size, :num_bombs
 
     def inform
-        @grid.each_with_index do |row, row_idx|
+        grid.each_with_index do |row, row_idx|
             row.each_with_index do |tile, col_idx|
                 pos = [row_idx, col_idx]
                 tile.inform_bombs(adjacent_bombs(pos))
@@ -98,13 +98,12 @@ class Board
     def place_bombs
         while num_placed_bombs < num_bombs
             pos = [rand(0...size), rand(0...size)]
-            row, col = pos
-            @grid[row][col] = 1
+            self[pos] = 1
         end
     end
 
     def num_placed_bombs
-        @grid.flatten.count {|el| el == 1}
+        grid.flatten.count {|el| el == 1}
     end
 
     def generate_display
@@ -129,7 +128,7 @@ class Board
     end
 
     def adjacent_bombs(pos)
-        neighbors = self.neighbs(pos)
+        neighbors = neighbs(pos)
         neighbors.count {|neighb| neighb.bomb?}
     end
 
