@@ -1,6 +1,6 @@
 require 'sqlite3'
 require_relative 'question_db_connection'
-require_relative 'questions'
+require_relative 'question'
 require_relative 'user'
 
 class QuestionLike 

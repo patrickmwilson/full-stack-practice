@@ -1,9 +1,9 @@
 require 'sqlite3'
 require_relative 'question_db_connection'
-require_relative 'questions'
-require_relative 'replies'
-require_relative 'question_follows'
-require_relative 'question_likes'
+require_relative 'question'
+require_relative 'reply'
+require_relative 'question_follow'
+require_relative 'question_like'
 
 class User
 
